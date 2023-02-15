@@ -1,7 +1,8 @@
 import { createBrowserRouter } from 'react-router-dom'
-import ErrorPage from '../pages/ErrorPage'
 import Root from './root'
-import Settings from './settings'
+import ErrorPage from '../pages/ErrorPage'
+import Home from '../pages/home'
+import Settings from '../pages/settings'
 
 const routerConfig = createBrowserRouter([
   {
@@ -10,8 +11,13 @@ const routerConfig = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
+        element: <Home />,
+        index: true
+      },
+      {
         path: 'settings',
-        element: <Settings />
+        element: <Settings />,
+        index: true
       }
     ]
   },
