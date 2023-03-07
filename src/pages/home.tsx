@@ -7,6 +7,7 @@ import Modal from 'react-bootstrap/Modal';
 import { useForm } from 'react-hook-form';
 import { Link } from "react-router-dom";
 import { ChevronRight } from "react-bootstrap-icons";
+import useFetchIugu from "../hooks/useFetchIugu";
 
 export default function Home() {
   //const [localMainAccountId, setLocalMainAccountId] = useState<string | null>()
@@ -20,13 +21,19 @@ export default function Home() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const { 
+    getAccount, 
+    confirmAccount, 
+    updateAccount 
+  } = useFetchIugu()
+
   type FormData = {
-    subaccountId: string;
+    accountId: string;
   };
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm({
     defaultValues: {
-      subaccountId: '',
+      accountId: '',
       cents: '',
       creditCardPercent: '',
       pixPercent: '',
@@ -34,14 +41,33 @@ export default function Home() {
     }
   })
 
-  const watchSubaccountId = watch('subaccountId')
+  const watchAccountId = watch('accountId')
 
-  function onSubmit({subaccountId}:FormData) {
-    //TODO fetch IUGU APIs with subaccountId
-    //console.log(localMainAccountId);
-    console.log(localMainApiToken);
+  async function onSubmit({ accountId }:FormData) {
+    //TODO fetch IUGU APIs with accountId
 
-    const accountId = '0028D34B1A04474193AF5B9381C6DD2C'
+    try {
+      const { tokens } = await getAccount(accountId)
+
+      if (!tokens)
+        throw new Error('Não foi possível recuperar os dados da subconta')
+        
+      const { success: successConfirmSubaccount } = await confirmAccount(tokens)
+
+      if (!successConfirmSubaccount)
+        throw new Error('Não foi possível confirmar a subconta')
+
+      const { success: successUpdateSubaccount } = await updateAccount(tokens)
+
+      if (!successUpdateSubaccount)
+        throw new Error('Não foi possível confirmar a subconta')
+
+      console.log(tokens);
+    } catch (error) {
+      console.error(error)
+    }
+
+    /*const accountId = '0028D34B1A04474193AF5B9381C6DD2C'
     const liveToken = '6b48314cd1b0b49c5a4a026187029860'
     const userToken = '3a0954b21e960cd376b33f77f5d61caa'
 
@@ -49,17 +75,18 @@ export default function Home() {
       'account_id': accountId,
       'api_token': liveToken,
       'user_token': userToken,
-    }
-    setFinalResult(JSON.stringify(result, null, 2))
+    }*/
+
+    //setFinalResult(JSON.stringify(result, null, 2))
   }
 
   useEffect(() => {
     setDisabled(true)
 
-    if (watchSubaccountId && canFetch)
+    if (watchAccountId && canFetch)
       setDisabled(false)
 
-  }, [watchSubaccountId])
+  }, [watchAccountId])
 
   useEffect(() => {
     //const getLocalMainAccountId = localStorage.getItem('mainAccountId')
@@ -95,7 +122,7 @@ export default function Home() {
                 <Stack gap={3}>
                   <Form.Group>
                     <Form.Label>Account ID</Form.Label>
-                    <Form.Control type='text' {...register("subaccountId")} placeholder='Insira o Account ID' />
+                    <Form.Control type='text' {...register("accountId")} placeholder='Insira o Account ID' />
                   </Form.Group>
 
                   <hr />
