@@ -2,25 +2,25 @@ import { IuguGetAccountResponse, IuguConfirmAccountResponse, IuguUpdateAccountRe
 import useFetch from "./useFetch";
 
 type useFetchIuguReturn = {
-  getAccount: (accountId:string) => Promise<IuguGetAccountResponse>;
-  confirmAccount: (accountId:string) => Promise<IuguConfirmAccountResponse>;
-  updateAccount: (accountId:string) => Promise<IuguUpdateAccountResponse>;
+  getAllAccounts: (accountId:string) => Promise<IuguGetAccountResponse>;
+  confirmAccount: (accountTokens:{}) => Promise<IuguConfirmAccountResponse>;
+  updateAccount: (accountTokens:{}) => Promise<IuguUpdateAccountResponse>;
 }
 
 const useFetchIugu = () => {
 
   const { request } = useFetch()
 
-  const getAccount = async (accountId:string):Promise<IuguGetAccountResponse> => {
+  const getAllAccounts = async (localMainApiToken:string):Promise<IuguGetAccountResponse> => {
     try {
-      const response:IuguGetAccountResponse  = await request<IuguGetAccountResponse>('')
+      const response:IuguGetAccountResponse  = await request<IuguGetAccountResponse>(`https://api.iugu.com/v1/retrieve_subaccounts_api_token?api_token=${localMainApiToken}`)
       return response
     } catch (error) {
       throw error
     }
   }
 
-  const confirmAccount = async (accountId:string):Promise<IuguConfirmAccountResponse> => {
+  const confirmAccount = async (accountTokens:{}):Promise<IuguConfirmAccountResponse> => {
     try {
       const response:IuguConfirmAccountResponse  = await request<IuguConfirmAccountResponse>('')
       return response
@@ -29,7 +29,7 @@ const useFetchIugu = () => {
     }
   }
 
-  const updateAccount = async (accountId:string):Promise<IuguUpdateAccountResponse> => {
+  const updateAccount = async (accountTokens:{}):Promise<IuguUpdateAccountResponse> => {
     try {
       const response:IuguUpdateAccountResponse  = await request<IuguUpdateAccountResponse>('')
       return response
@@ -39,7 +39,7 @@ const useFetchIugu = () => {
   }
 
   return {
-    getAccount,
+    getAllAccounts,
     confirmAccount,
     updateAccount
   } as useFetchIuguReturn

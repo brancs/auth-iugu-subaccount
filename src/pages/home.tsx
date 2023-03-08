@@ -22,7 +22,7 @@ export default function Home() {
   const handleShow = () => setShow(true);
 
   const { 
-    getAccount, 
+    getAllAccounts, 
     confirmAccount, 
     updateAccount 
   } = useFetchIugu()
@@ -47,22 +47,28 @@ export default function Home() {
     //TODO fetch IUGU APIs with accountId
 
     try {
-      const { tokens } = await getAccount(accountId)
+      let accounts;
 
-      if (!tokens)
+      if (localMainApiToken)
+        accounts = await getAllAccounts(localMainApiToken)
+
+      const accountTokens = {}
+      //TODO find in accounts -> accountId
+
+      if (!accountTokens)
         throw new Error('Não foi possível recuperar os dados da subconta')
         
-      const { success: successConfirmSubaccount } = await confirmAccount(tokens)
+      const { success: successConfirmSubaccount } = await confirmAccount(accountTokens)
 
       if (!successConfirmSubaccount)
         throw new Error('Não foi possível confirmar a subconta')
 
-      const { success: successUpdateSubaccount } = await updateAccount(tokens)
+      const { success: successUpdateSubaccount } = await updateAccount(accountTokens)
 
       if (!successUpdateSubaccount)
         throw new Error('Não foi possível confirmar a subconta')
 
-      console.log(tokens);
+      console.log(accountTokens);
     } catch (error) {
       console.error(error)
     }
